@@ -53,7 +53,7 @@ map.on('load', function(){
 
     map.addSource("jobs", {
         type: "geojson",
-        data: "https://github.com/vincentsarago/reviensleon/blob/gh-pages/data/reviensleon.geojson",
+        data: "https://s3-us-west-2.amazonaws.com/remotepixel/data/reviensleon.geojson",
         cluster: true,
         clusterMaxZoom: 14, // Max zoom to cluster points on
         clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
