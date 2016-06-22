@@ -52,7 +52,7 @@
             .addAttribution('<a href="http://www.reviensleon.com" target="_blank"> #ReviensLéon</a>')
             .addTo(map);
 
-        L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
@@ -103,6 +103,7 @@
                 if (map.getBounds().contains(e.getLatLng())) onView.push(e)
             })
 
+            // console.log(onView);
         }
 
         $(document).ready(function () {
