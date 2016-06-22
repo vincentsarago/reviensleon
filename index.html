@@ -32,6 +32,7 @@
     </div>
 
     <div id="info-jobs" class="col-sm-4 col-md-3 info-jobs">
+        <span class="jobs">0 job(s) in view</span>
         <div class="list-jobs"></div>
         <span class="spin display-none"><i class="fa fa-spinner fa-spin"></i></span>
     </div>
@@ -52,7 +53,7 @@
             .addAttribution('<a href="http://www.reviensleon.com" target="_blank"> #ReviensLéon</a>')
             .addTo(map);
 
-        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
@@ -71,16 +72,15 @@
                 }
             })
             markers.addLayer(geojson);
+            feedList();
         });
-
-
 
         markers.on('click', function (a) {
             var html = '<div class="leaflet_pop">'+
                             '<h3>'+ a.layer.feature.properties.titre+'</h3>' +
                             '<span class="job-entr">Entreprise: <strong>'+ a.layer.feature.properties.employeur + '</strong></span>' +
                             '<span class="job-place">Lieu: <strong>'+ a.layer.feature.properties.place + '</strong></span>' +
-                            '<a href="' + a.layer.feature.properties.link + '">DÉTAILS DE L\'OFFRE</a>' +
+                            '<a target="_blank" href="' + a.layer.feature.properties.link + '">DÉTAILS DE L\'OFFRE</a>' +
                         '</div>';
 
             var popup = L.popup({maxWidth: 512, maxHeight:512, keepInView:true})
@@ -93,9 +93,13 @@
             a.layer.zoomToBounds();
         });
 
-        map.on('moveend', feedList)
+        map.on('moveend', feedList);
 
         function feedList(){
+            $('.spin').removeClass('display-none');
+            $('.list-jobs').scrollTop(0);
+            $('.list-jobs').empty();
+
             var lyrs = markers.getLayers(),
                 onView = [];
 
@@ -103,7 +107,21 @@
                 if (map.getBounds().contains(e.getLatLng())) onView.push(e)
             })
 
-            // console.log(onView);
+            onView.forEach(function(e){
+                $('.list-jobs').append(
+                    '<a class="list-element" target="_blank" href="' + e.feature.properties.link + '">'+
+                        '<div class="col">' +
+                            '<div class="job-descr"><span class="entreprise">' + e.feature.properties.employeur.slice(0,1) + '</span></div>' +
+                            '<div class="job-descr">'+
+                                '<span class="poste">'+ e.feature.properties.titre +'</span>' +
+                                '<span class="descr">' + e.feature.properties.employeur + ' / ' + e.feature.properties.place+ '</span>' +
+                            '</div>' +
+                        '</div>' +
+                    '</a>');
+            });
+
+            $('.info-jobs .jobs').text( onView.length.toString() + " job(s) in view")
+            $('.spin').addClass('display-none');
         }
 
         $(document).ready(function () {
