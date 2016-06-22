@@ -2,8 +2,15 @@
 <html>
 <head>
     <meta charset='utf-8' />
-    <title></title>
+    <title>Carte des offres d'emploi #ReviensLéon</title>
+
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <meta name="description" content="Carte des offres d'emploi #ReviensLéon">
+	<meta name="author" content="Vincent Sarago">
+    <meta name="twitter:title" content="ReviensLéon job map" />
+    <meta name="twitter:site" content="@_VincentS_" />
+    <meta name="twitter:description" content="Carte des offres d'emploi #ReviensLéon" />
+
     <link rel="stylesheet" href="src/leaflet/leaflet.css" />
     <link rel="stylesheet" href="css/MarkerCluster.Default.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
@@ -131,11 +138,12 @@
             $("#twitter").attr('href',
                     'https://twitter.com/share?url=' + encodeURIComponent(share_url) +
                     '&via=_VincentS_' +
-                    '&text=ReviensLeon Job map');
+                    '&hashtags=ReviensLeon' +
+                    '&text=Reviens Léon On Innove à la Maison');
 
             $("#linkedin").attr('href',
                     'https://www.linkedin.com/shareArticle?mini=true&url=' + encodeURIComponent(share_url) +
-                    '&title=ReviensLeon Job map');
+                    '&title=Reviens Léon On Innove à la Maison');
 
             $("#facebook").attr('href',
                     'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(share_url));
