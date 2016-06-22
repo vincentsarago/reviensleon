@@ -4,87 +4,127 @@
     <meta charset='utf-8' />
     <title></title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.20.1/mapbox-gl.js'></script>
-    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.20.1/mapbox-gl.css' rel='stylesheet' />
-    <style>
-        body { margin:0; padding:0; }
-        #map { position:absolute; top:0; bottom:0; width:100%; }
-    </style>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+    <link rel="stylesheet" href="css/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.min.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" />
+
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <script src="js/leaflet.markercluster.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
 </head>
 <body>
+    <div id="map" class="col-xs-12 col-sm-8 col-md-9 map">
+        <span class="top-left"><a href="http://www.reviensleon.com" target="_blank"> #REVIENSLEON</a></span>
+        <div class="bottom-right-button">
+            <a id="twitter" class="sharebutt" href="" title="Share on Twitter" target="_blank">
+                <i class="fa fa-twitter"></i>
+            </a>
+            <a id="linkedin" class="sharebutt" href="" title="Share on LinkedIn" target="_blank">
+                <i class="fa fa-linkedin"></i>
+            </a>
+            <a id="facebook" class="sharebutt" href="" title="Share on Facebook" target="_blank">
+                <i class="fa fa-facebook"></i>
+            </a>
+        </div>
+    </div>
 
-<div id='map'></div>
+    <div id="info-jobs" class="col-sm-4 col-md-3 info-jobs">
+        <div class="list-jobs"></div>
+        <span class="spin display-none"><i class="fa fa-spinner fa-spin"></i></span>
+    </div>
 
-<script>
-//inspiration 
-//https://www.mapbox.com/mapbox-gl-js/example/cluster/
 
-mapboxgl.accessToken = 'pk.eyJ1IjoidmluY2VudHNhcmFnbyIsImEiOiJjaW4xMGJya2MwYXM5dmxtNDEzbWhia200In0.k5k8j7ZO4o_WVYoJv5E2Xw';
-var map = new mapboxgl.Map({
-    container: 'map',
-    style: 'mapbox://styles/mapbox/dark-v9',
-    center: [-103.59179687498357, 40.66995747013945],
-    zoom: 3,
-});
+    <script>
 
-map.on('load', function(){
-
-    map.addSource("jobs", {
-        type: "geojson",
-        data: "https://s3-us-west-2.amazonaws.com/remotepixel/data/reviensleon.geojson",
-        cluster: true,
-        clusterMaxZoom: 14, // Max zoom to cluster points on
-        clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
-    });
-
-    map.addLayer({
-        "id": "non-cluster-markers",
-        "type": "symbol",
-        "source": "jobs",
-        "layout": {
-            "icon-image": "marker-15"
-        }
-    });
-
-    var layers = [
-        [150, '#f28cb1'],
-        [20, '#f1f075'],
-        [0, '#51bbd6']
-    ];
-
-    layers.forEach(function (layer, i) {
-        map.addLayer({
-            "id": "cluster-" + i,
-            "type": "circle",
-            "source": "jobs",
-            "paint": {
-                "circle-color": layer[1],
-                "circle-radius": 18
-            },
-            "filter": i == 0 ?
-                [">=", "point_count", layer[0]] :
-                ["all",
-                    [">=", "point_count", layer[0]],
-                    ["<", "point_count", layers[i - 1][0]]]
+        var map = L.map('map', {
+            minZoom: 1,
+            maxZoom: 10,
+            zoomControl: false,
+            attributionControl: false
         });
-    });
+        map.setView([51.505, -0.09], 4);
 
-    // Add a layer for the clusters' count labels
-    map.addLayer({
-        "id": "cluster-count",
-        "type": "symbol",
-        "source": "jobs",
-        "layout": {
-            "text-field": "{point_count}",
-            "text-font": [
-                    "DIN Offc Pro Medium",
-                    "Arial Unicode MS Bold"
-                ],
-            "text-size": 12
+        L.control.zoom({position: 'topright'}).addTo(map);
+        L.control.attribution({prefix: '<a href="https://remotepixel.ca" target="_blank"> &copy; RemotePixel.ca</a>', position: 'bottomright'})
+            .addAttribution('<a href="http://www.reviensleon.com" target="_blank"> #ReviensLéon</a>')
+            .addTo(map);
+
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var markers = L.markerClusterGroup({
+            spiderfyOnMaxZoom: false,
+            showCoverageOnHover: false,
+            zoomToBoundsOnClick: false,
+            maxClusterRadius: 10
+        }).addTo(map);
+
+
+        $.getJSON('data/reviensleon.geojson', function(data) {
+            var geojson = L.geoJson(data, {
+                pointToLayer: function (feature, latlng) {
+                    return L.marker(latlng)
+                }
+            })
+            markers.addLayer(geojson);
+        });
+
+
+
+        markers.on('click', function (a) {
+            var html = '<div class="leaflet_pop">'+
+                            '<h3>'+ a.layer.feature.properties.titre+'</h3>' +
+                            '<span class="job-entr">Entreprise: <strong>'+ a.layer.feature.properties.employeur + '</strong></span>' +
+                            '<span class="job-place">Lieu: <strong>'+ a.layer.feature.properties.place + '</strong></span>' +
+                            '<a href="' + a.layer.feature.properties.link + '">DÉTAILS DE L\'OFFRE</a>' +
+                        '</div>';
+
+            var popup = L.popup({maxWidth: 512, maxHeight:512, keepInView:true})
+                .setLatLng(a.layer.getLatLng())
+                .setContent(html)
+                .openOn(map);
+        });
+
+        markers.on('clusterclick', function (a) {
+            a.layer.zoomToBounds();
+        });
+
+        map.on('moveend', feedList)
+
+        function feedList(){
+            var lyrs = markers.getLayers(),
+                onView = [];
+
+            lyrs.forEach( function(e){
+                if (map.getBounds().contains(e.getLatLng())) onView.push(e)
+            })
+
+            console.log(onView);
         }
-    });
-});
-</script>
+
+        $(document).ready(function () {
+            'use strict';
+
+            var share_url =  window.location.href;
+            $("#twitter").attr('href',
+                    'https://twitter.com/share?url=' + encodeURIComponent(share_url) +
+                    '&via=_VincentS_' +
+                    '&text=ReviensLeon Job map');
+
+            $("#linkedin").attr('href',
+                    'https://www.linkedin.com/shareArticle?mini=true&url=' + encodeURIComponent(share_url) +
+                    '&title=ReviensLeon Job map');
+
+            $("#facebook").attr('href',
+                    'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(share_url));
+        });
+
+    </script>
 
 </body>
 </html>

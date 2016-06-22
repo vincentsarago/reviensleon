@@ -1,0 +1,164 @@
+html {
+	width: 100%;
+	height: 100%;
+}
+body {
+    height:100%;
+    width: 100%;
+}
+
+.top-left a {
+	z-index: 1;
+	font-size: 24px;
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	color: #000;
+	text-decoration: none;
+}
+
+.leaflet-control-attribution a {
+	color: #000;
+}
+
+.row, .col {
+    padding: 0;
+    margin: 0;
+}
+.center{
+    padding: 5px;
+    margin: auto
+}
+.display-none {
+    display: none;
+}
+.map {
+    height: 100%;
+    z-index: 0;
+    padding: 0;
+    margin: 0;
+    display: block;
+}
+
+.info-jobs {
+    height: 100%;
+    z-index: 1;
+    background-color: #000;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+}
+
+.list-jobs {
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+}
+
+.list-jobs .list-element {
+    color: #FFF;
+    background-color: #404040;
+    cursor: pointer;
+}
+
+.list-jobs .list-element:hover {
+    color: #000;
+    background-color: #FFF;
+}
+
+.list-jobs .list-element .col {
+    padding: 5px 20px;
+    height: 60px;
+    white-space: nowrap;
+    width: 100%;
+    display: block;
+    vertical-align: middle;
+    margin: auto;
+}
+
+.list-jobs .list-element .jobs-id {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    text-align: right;
+    font-size: 10px;
+    line-height: 10px;
+    color: #FFF;
+}
+
+.list-jobs .list-element .jobs-thumb {
+    position: relative;
+	width: 100%;
+}
+
+.bottom-right-button {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    width: auto;
+    height: auto;
+    z-index: 2;
+}
+
+.sharebutt{
+    font-weight: 100;
+    display: block;
+    padding-bottom: 5px;
+}
+.sharebutt:last-of-type{
+    padding-bottom: 0;
+}
+
+.sharebutt .fa{
+    height: 30px;
+    width: 30px;
+    line-height: 30px;
+    border-radius: 50%;
+    color: #FFF;
+    background-color: #359aef;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.leaflet_pop * {
+	display: block;
+}
+
+.leaflet_pop h3{
+	color: #e75a6a;
+	line-height: 18px;
+	font-size: 16px;
+}
+
+.leaflet_pop strong {
+	display: inline-block;
+}
+
+.leaflet_pop a {
+	font-size: 11px;
+	margin-top: 5px;
+	text-transform: uppercase;
+	text-decoration: underline;
+	color: #000;
+}
+
+@media(max-width: 767px){
+    .map {
+        height: calc(100% - 120px);
+    }
+    .info-jobs {
+        width: 100%;
+        height: 120px;
+        display: block;
+        z-index: 1;
+        background-color: #000;
+        margin: 0;
+        padding: 0;
+        overflow-y: auto;
+    }
+    .list-img .list-element .img-thumb{
+        display: none;
+    }
+}
