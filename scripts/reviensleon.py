@@ -3,7 +3,6 @@
 
 from __future__ import print_function
 import os
-import json
 from urllib2 import urlopen
 import bs4 as BeautifulSoup
 from geopy.geocoders import Nominatim
@@ -66,7 +65,3 @@ while True:
 
 layer = None
 json_ds.Destroy()
-
-# loclist = 'list.json'
-# with open(loclist, 'w') as fp:
-#     json.dump(res, fp, indent = 4, separators = (',', ': '), ensure_ascii=False)
