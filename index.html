@@ -18,35 +18,13 @@
 <script>
 //inspiration 
 //https://www.mapbox.com/mapbox-gl-js/example/cluster/
-//https://bl.ocks.org/danswick/a4de5c170c04fdd38bb4
 
+mapboxgl.accessToken = 'pk.eyJ1IjoidmluY2VudHNhcmFnbyIsImEiOiJjaW4xMGJya2MwYXM5dmxtNDEzbWhia200In0.k5k8j7ZO4o_WVYoJv5E2Xw';
 var map = new mapboxgl.Map({
-    container: 'map', // container id
-    style: {
-        "version": 8,
-        "sources": {
-            "simple-tiles": {
-                "type": "raster",
-                // point to our third-party tiles. Note that some examples
-                // show a "url" property. This only applies to tilesets with
-                // corresponding TileJSON (such as mapbox tiles). 
-                "tiles": [
-                    "http://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    "http://b.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                ],
-                "tileSize": 256
-            }
-        },
-        "layers": [{
-            "id": "simple-tiles",
-            "type": "raster",
-            "source": "simple-tiles",
-            "minzoom": 0,
-            "maxzoom": 22
-        }]
-    },
-    center: [-74.50, 40], // starting position
-    zoom: 2 // starting zoom
+    container: 'map',
+    style: 'mapbox://styles/mapbox/dark-v9',
+    center: [-103.59179687498357, 40.66995747013945],
+    zoom: 3,
 });
 
 map.on('load', function(){
