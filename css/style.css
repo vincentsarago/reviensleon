@@ -5,11 +5,30 @@ html {
 body {
     height:100%;
     width: 100%;
+	overflow: hidden;
 }
 
-.top-left a {
-	z-index: 1;
+body * {
+    -webkit-touch-callout: none;
+      -webkit-user-select: none;
+         -moz-user-select: none;
+          -ms-user-select: none;
+              user-select: none;
+}
+
+.red {
+	color: #E25265;
+}
+
+.blue {
+	color: #3F99B8;
+}
+
+.top-left {
+	height: 49px;
+	z-index: 2;
 	font-size: 24px;
+	font-weight: 300;
 	position: absolute;
 	top: 10px;
 	left: 10px;
@@ -25,13 +44,15 @@ body {
     padding: 0;
     margin: 0;
 }
-.center{
+.center {
     padding: 5px;
     margin: auto
 }
+
 .display-none {
     display: none;
 }
+
 .map {
     height: 100%;
     z-index: 0;
@@ -43,7 +64,7 @@ body {
 .info-jobs {
     height: 100%;
     z-index: 1;
-    background-color: #000;
+    background-color: #FFF;
     margin: 0;
     padding: 0;
     overflow-y: hidden;
@@ -53,7 +74,7 @@ body {
 	display: block;
     padding: 10px;
 	height: 40px;
-	color: #FFF;
+	color: #E25265;
 	font-size: 14px;
 }
 
@@ -61,47 +82,57 @@ body {
     width: 100%;
     height: calc(100% - 40px);
     overflow-y: scroll;
+	background-color: #FFF;
+}
+
+.list-jobs .list-element .col{
+	border-top: 1px solid #E25265;
 }
 
 .list-jobs .list-element .col {
     color: #FFF;
-    background-color: #404040;
     cursor: pointer;
 }
 
 .list-jobs .list-element .col:hover {
-    background-color: #585454;
+	background-color: rgb(88, 84, 84);
+    background-color: rgba(88, 84, 84, 0.2);
 }
 
 .job-descr {
     font-weight: 100;
     display: inline-block;
-    padding: 3px;
+    padding: 5px;
     vertical-align: middle;
-}
-
-.job-descr .entreprise{
-    display: inline-block;
-    height: 40px;
-    width: 40px;
-    line-height: 40px;
-    border-radius: 50%;
-    background-color: #359aef;
-    text-align: center;
-    vertical-align: middle;
-    font-size: 20px;
-	font-weight: 300;
 }
 
 .job-descr .poste {
     display: block;
-	color: #e75a6a;
+	color: #3F99B8;
+	font-weight: 200;
 	line-height: 18px;
 	font-size: 16px;}
 
 .job-descr .descr {
     display: block;
-    font-size: 14px;
+	font-weight: 100;
+	color: #E25265;
+    font-size: 16px;
+}
+
+.my-cluster-icon {
+    height: 35px;
+    width: 35px;
+    line-height: 35px;
+    border-radius: 50%;
+	background-color: rgb(62, 153, 184);
+    background-color: rgba(62, 153, 184, 0.8);
+	color: #FFF;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 15px;
+	font-weight: 400;
+	z-index: 100;
 }
 
 .bottom-right-button {
@@ -128,7 +159,7 @@ body {
     line-height: 30px;
     border-radius: 50%;
     color: #FFF;
-    background-color: #359aef;
+    background-color: #3F99B8;
     text-align: center;
     vertical-align: middle;
     font-size: 15px;
@@ -140,7 +171,7 @@ body {
 }
 
 .leaflet_pop h3{
-	color: #e75a6a;
+	color: #E25265;
 	line-height: 18px;
 	font-size: 16px;
 }
@@ -163,7 +194,7 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     width: 100%;
-    color: #FFF;
+    color: #000;
     font-size: 14px;
     text-align: center;
 }

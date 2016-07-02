@@ -17,7 +17,10 @@
 </head>
 <body>
     <div id="map" class="col-xs-12 col-sm-8 col-md-9 map">
-        <span class="top-left"><a href="http://www.reviensleon.com" target="_blank"> #REVIENSLEON</a></span>
+        <a class="top-left" href="http://www.reviensleon.com" target="_blank">
+            <img src="/img/ReviensLeon_medium.png">
+        </a>
+
         <div class="bottom-right-button">
             <a id="twitter" class="sharebutt" href="" title="Share on Twitter" target="_blank">
                 <i class="fa fa-twitter"></i>
@@ -29,14 +32,14 @@
                 <i class="fa fa-facebook"></i>
             </a>
 
-            <a id="git" class="sharebutt" href="https://github.com/vincentsarago/reviensleon" target="_blank">
+            <!-- <a id="git" class="sharebutt" href="https://github.com/vincentsarago/reviensleon" target="_blank">
                 <i class="fa fa-github"></i>
-            </a>
+            </a> -->
         </div>
     </div>
 
     <div id="info-jobs" class="col-sm-4 col-md-3 info-jobs">
-        <span class="jobs">0 job(s) in view</span>
+        <span class="jobs"><span class="blue">0</span> job(s) in view</span>
         <div class="list-jobs"></div>
         <span class="spin display-none"><i class="fa fa-spinner fa-spin"></i></span>
     </div>
@@ -49,12 +52,18 @@
             maxZoom: 10,
             zoomControl: false,
             attributionControl: false
-        });
-        map.setView([51.505, -0.09], 4);
+        }),
+        icon = L.icon({
+                iconUrl: '/img/icon.png',
+                iconAnchor: [13, 40],
+                iconSize: [26, 40]
+            });
+
+        map.setView([51.505, -0.09], 3);
 
         L.control.zoom({position: 'topright'}).addTo(map);
-        L.control.attribution({prefix: '<a href="https://twitter.com/_VincentS_" target="_blank">&copy; VincentS</a>', position: 'bottomright'})
-            .addAttribution('<a href="http://www.reviensleon.com" target="_blank"> #ReviensLéon</a>')
+        L.control.attribution({prefix: '<a href="https://twitter.com/_VincentS_" target="_blank">VincentS</a>', position: 'bottomright'})
+            .addAttribution('<a href="http://www.reviensleon.com" target="_blank"> <span class="red">#</span><span class="blue">Reviens</span><span class="red">Léon</span></a>')
             .addTo(map);
 
         L.tileLayer('http://{s}.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png', {
@@ -65,14 +74,16 @@
             spiderfyOnMaxZoom: false,
             showCoverageOnHover: false,
             zoomToBoundsOnClick: false,
-            maxClusterRadius: 10
+            maxClusterRadius: 10,
+            iconCreateFunction: function(cluster) {
+                return L.divIcon({ html: cluster.getChildCount(), className: 'my-cluster-icon', iconSize: L.point(35, 35) });
+            }
         }).addTo(map);
-
 
         $.getJSON('https://s3-us-west-2.amazonaws.com/remotepixel/data/reviensleon.geojson', function(data) {
             var geojson = L.geoJson(data, {
                 pointToLayer: function (feature, latlng) {
-                    return L.marker(latlng)
+                    return L.marker(latlng, {icon: icon, pixelSize: 1, draggable: false, zIndexOffset: 1})
                 }
             })
             markers.addLayer(geojson);
@@ -115,7 +126,6 @@
                 $('.list-jobs').append(
                     '<a class="list-element" target="_blank" href="' + e.feature.properties.link + '">'+
                         '<div class="col">' +
-                            '<div class="job-descr"><span class="entreprise">' + e.feature.properties.employeur.slice(0,1) + '</span></div>' +
                             '<div class="job-descr">'+
                                 '<span class="poste">'+ e.feature.properties.titre +'</span>' +
                                 '<span class="descr">' + e.feature.properties.employeur + ' / ' + e.feature.properties.place+ '</span>' +
@@ -124,7 +134,7 @@
                     '</a>');
             });
 
-            $('.info-jobs .jobs').text( onView.length.toString() + " job(s) in view")
+            $('.info-jobs .jobs').html( '<span class="blue">' + onView.length.toString() + '</span> job(s) in view')
             $('.spin').addClass('display-none');
         }
 
