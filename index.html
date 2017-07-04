@@ -72,7 +72,7 @@
             }
         }).addTo(map);
 
-        $.getJSON('https://data.remotepixel.ca/reviensleon.geojson', function(data) {
+        $.getJSON('https://s3-us-west-2.amazonaws.com/remotepixel/data/reviensleon.geojson', function(data) {
             var geojson = L.geoJson(data, {
                 pointToLayer: function (feature, latlng) {
                     return L.marker(latlng, {icon: icon, pixelSize: 1, draggable: false, zIndexOffset: 1})
