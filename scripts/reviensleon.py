@@ -1,87 +1,75 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-from __future__ import print_function
-
 import os
-import time
-from osgeo import ogr, osr
-from urllib2 import urlopen
-import bs4 as BeautifulSoup
-from boto3.session import Session
+import json
+
 from geopy.geocoders import Nominatim
-
-#AWS S3 Account Informations
-session = Session(aws_access_key_id='',
-                  aws_secret_access_key='',
-                  region_name='')
-
-driver = ogr.GetDriverByName('GeoJSON')
-outjson = '/tmp/reviensleon.geojson'
-if os.path.isfile(outjson):
-    os.remove(outjson)
-
-json_ds = driver.CreateDataSource(outjson)
-srs = osr.SpatialReference()
-srs.ImportFromEPSG(4326)
-
-layer = json_ds.CreateLayer('jobs', srs, geom_type=ogr.wkbPoint)
-layer.CreateField(ogr.FieldDefn("titre", ogr.OFTString))
-layer.CreateField(ogr.FieldDefn("employeur", ogr.OFTString))
-layer.CreateField(ogr.FieldDefn("link", ogr.OFTString))
-layer.CreateField(ogr.FieldDefn("place", ogr.OFTString))
-defn = layer.GetLayerDefn()
+from algoliasearch import algoliasearch
 
 geolocator = Nominatim()
-off = 0
-while True:
-    html = urlopen('http://www.reviensleon.com/Postuler/Offres-Start-ups/(offset)/{}'.format(off)).read().decode('utf-8')
-    soup = BeautifulSoup.BeautifulSoup(html, "html.parser")
-    offres = soup.find('div', attrs={"class": "liste-offres page-listing-offre"}).find_all('article')
-    if len(offres) == 0:
-        break
 
-    for o in offres:
-        ep = (o.find("p", attrs={"class":"mt10"}).text).split(' / ')
-        place = ep[1] if len(ep) == 2 else ''
+API_url = 'https://csekhvms53-dsn.algolia.net'
+
+app_id = os.environ.get('APPLICATION_ID')
+app_key = os.environ.get('APPLICATION_KEY')
+
+geojson = {"type": "FeatureCollection", "features": []}
+
+client = algoliasearch.Client(app_id, app_key)
+
+index = client.init_index("wk_jobs_production")
+offres = index.browse_all({"query": ""})
+
+knw_place = {}
+
+for offre in offres:
+
+    try:
+        titre = offre['name']
+        employeur = offre['company_name']
+        place = offre['office']
+        link = offre['websites_urls'][0]['url']
+
         lat = 0
         lon = 0
         if place != '':
-            print(place)
-            try:
-                location = geolocator.geocode(place)
-            except:
-                print("Geopy Error for {}".format(place))
-            if location:
-                lat = location.latitude
-                lon = location.longitude
-            time.sleep(1) #sleep 1 sec to not overcall Nominatim
+            if place in knw_place.keys():
+                lat = knw_place[place]['lat']
+                lon = knw_place[place]['lon']
+            else:
+                try:
+                    location = geolocator.geocode(place)
+                except:
+                    print("Geopy Error for {}".format(place))
 
-        feature = ogr.Feature(defn)
-        point = ogr.Geometry(ogr.wkbPoint)
-        point.AddPoint(lon, lat)
-        feature.SetGeometry(point)
+                if location:
+                    lat = location.latitude
+                    lon = location.longitude
+                    knw_place[place] = {}
+                    knw_place[place]['lat'] = lat
+                    knw_place[place]['lon']  = lon
 
-        a = o.find("a", attrs={"class":"gaOffre"})
-        titre = a.get("title").encode('utf-8')
-        employeur = a.get("data-employeur").encode('utf-8')
-        link = a.get("href").encode('utf-8')
 
-        feature.SetField("titre", titre)
-        feature.SetField("employeur", employeur)
-        feature.SetField("link", link)
-        feature.SetField("place", place.encode('utf-8'))
-        layer.CreateFeature(feature)
+            feature = {
+                "type": "Feature",
+                "properties": {
+                    "titre": "",
+                    "employeur": "",
+                    "place": "",
+                    "link": ""
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": []
+                }
+            }
 
-    del soup
-    off += 16
+            feature["geometry"]["coordinates"] = [lon, lat, 0]
+            feature["properties"]["titre"] = titre
+            feature["properties"]["employeur"] = employeur
+            feature["properties"]["link"] = link
+            feature["properties"]["place"] = place
+            geojson["features"].append(feature)
+    except:
+        print(offre)
 
-layer = None
-json_ds.Destroy()
-
-#Upload image to S3
-if os.path.exists(outjson):
-    s3 = session.resource('s3')
-    fname = 'data/{}'.format(os.path.basename(outjson))
-    s3.Bucket('remotepixel').upload_file(outjson, fname, ExtraArgs={'ACL': 'public-read'})
-    print("file uploaded to AWS S3")
+with open('reviensleon.geojson', 'w') as f:
+    json.dump(geojson, f)
